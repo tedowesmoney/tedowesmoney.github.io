@@ -1,2 +1,0 @@
-# tedowesmoney.github.io
-Justice 

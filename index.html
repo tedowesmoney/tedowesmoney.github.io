@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Ted Must Pay</title>
+
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #ffffff;
+      font-family: Helvetica, Arial, FreeSans, san-serif;
+      color: black;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+	#header {
+		font-size: 4.8em;
+		color: #db1423; 
+		text-align: center;
+		text-decoration: underline;
+	}
+    #DebtClockSpan { 
+		font-size: 3.8em;
+		color: #ff0523; 
+		text-align: center;
+	}
+    
+  </style>
+	<script>
+			(function() {
+		var clock = new DebtClock("DebtClockSpan",30);
+	}
+	)();
+
+	function DebtClock(totalDebt, fps) {
+		this.TOTAL_DEBT = totalDebt;
+		this.DELAY = fps ? 1000 / fps : 100;
+		// How many decimals to use in total
+		this.TOTAL_DECIMALS = 5;
+		// The date the data was taken
+		this.START_DATE = new Date(2015,2,22);
+		// What value to start from (http://www.treasurydirect.gov/NP/BPDLogin?application=np)
+		this.START_DEBT = 2000.00;
+		// this year and then calculating the average increase a day)
+		this.DEBT_PER_DAY = 10.00;
+		//Calculates how much the debt increases each day
+		this.debtPerSecond = this.DEBT_PER_DAY / 24 / 60 / 60;
+		//Adds commas to the string
+		this.addCommas = function(str, nrOfDecimals) {
+			str = String(str);
+			var decimals = str.split(".")[1];
+			decimals = decimals ? "." + decimals : "";
+			decimals = decimals.substring(0, nrOfDecimals + 1);
+		
+			str = str.split(".")[0];
+			var rgx = /(\d+)(\d{3})/;
+			while (rgx.test(str)) {
+				str = str.replace(rgx, '$1' + ',' + '$2' + " Dollars and <p>");
+			}
+			if (nrOfDecimals > 0) {
+				return str + decimals + " cents</p>";
+				
+			} else {
+				return str;
+			}
+		}
+		;
+		//Updates the target id's innerHTML
+		this.updateOutput = function(id, value) {
+			var output = document.getElementById(id);
+			if (output != undefined) {
+				output.innerHTML = value;
+			}
+		}
+		;
+		//Updates the clock (will call itself)
+		this.update = function() {
+			var now = new Date();
+			var difference = now - this.START_DATE;
+			difference /= 1000;
+			var total = "$" + String(this.START_DEBT + (difference * this.debtPerSecond));
+			var str;
+			str = this.addCommas(total, this.TOTAL_DECIMALS);
+			this.updateOutput(this.TOTAL_DEBT, str);
+			thisObj = this;
+			window.setTimeout(function() {
+				thisObj.update();
+			}
+			, this.DELAY);
+		}
+		;
+		this.update();
+	}
+	</script>
+
+</head>
+
+
+<body>
+  
+
+  <div id="container">
+  <p id="header"><b>Ted Owes:</b></p>
+  <h1 id="DebtClockSpan"></h1>
+  </div>
+</body>
+</html>
